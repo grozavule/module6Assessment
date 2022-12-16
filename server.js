@@ -4,6 +4,7 @@ const {bots, playerRecord} = require('./data')
 const {shuffleArray} = require('./utils')
 
 app.use(express.json())
+app.use(express.static('public'))
 
 app.get('/api/robots', (req, res) => {
     try {
