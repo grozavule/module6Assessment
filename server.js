@@ -33,7 +33,7 @@ app.get('/api/robots/five', (req, res) => {
         let shuffled = shuffleArray(bots)
         let choices = shuffled.slice(0, 5)
         let compDuo = shuffled.slice(6, 8)
-        rollback.info(`SUCCESSFULLY RETRIEVED FIVE BOTS`);
+        rollbar.info(`SUCCESSFULLY RETRIEVED FIVE BOTS`);
         res.status(200).send({choices, compDuo})
     } catch (error) {
         rollbar.error(`ERROR GETTING FIVE BOTS`);
@@ -62,15 +62,15 @@ app.post('/api/duel', (req, res) => {
         // comparing the total health to determine a winner
         if (compHealthAfterAttack > playerHealthAfterAttack) {
             playerRecord.losses++
-            rollback.info(`USER LOST`);
+            rollbar.info(`USER LOST`);
             res.status(200).send('You lost!')
         } else {
             playerRecord.losses++
-            rollback.info(`USER WON`);
+            rollbar.info(`USER WON`);
             res.status(200).send('You won!')
         }
     } catch (error) {
-        rollback.error(`ERROR OCCURED DURING DUEL`);
+        rollbar.error(`ERROR OCCURED DURING DUEL`);
         console.log('ERROR DUELING', error)
         res.sendStatus(400)
     }
@@ -78,10 +78,10 @@ app.post('/api/duel', (req, res) => {
 
 app.get('/api/player', (req, res) => {
     try {
-        rollback.info(`PLAYER STATS SUCCESSFULLY RETRIEVED`);
+        rollbar.info(`PLAYER STATS SUCCESSFULLY RETRIEVED`);
         res.status(200).send(playerRecord)
     } catch (error) {
-        rollback.critical(`ERROR GETTING PLAYER STATS`);
+        rollbar.critical(`ERROR GETTING PLAYER STATS`);
         console.log('ERROR GETTING PLAYER STATS', error)
         res.sendStatus(400)
     }
