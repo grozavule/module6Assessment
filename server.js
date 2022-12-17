@@ -6,10 +6,23 @@ const {shuffleArray} = require('./utils')
 app.use(express.json())
 app.use(express.static('public'))
 
+// include and initialize the rollbar library with your access token
+var Rollbar = require('rollbar')
+var rollbar = new Rollbar({
+  accessToken: '72de69086a6241399b97869d48d9f365',
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+})
+
+// record a generic message and send it to Rollbar
+rollbar.log('Hello world!')
+
 app.get('/api/robots', (req, res) => {
     try {
+        rollbar.info(`BOTS SUCCESSFULLY RETRIEVED`);
         res.status(200).send(botsArr)
     } catch (error) {
+        rollbar.error(`ERROR GETTING BOTS`);
         console.log('ERROR GETTING BOTS', error)
         res.sendStatus(400)
     }
@@ -20,8 +33,10 @@ app.get('/api/robots/five', (req, res) => {
         let shuffled = shuffleArray(bots)
         let choices = shuffled.slice(0, 5)
         let compDuo = shuffled.slice(6, 8)
+        rollback.info(`SUCCESSFULLY RETRIEVED FIVE BOTS`);
         res.status(200).send({choices, compDuo})
     } catch (error) {
+        rollbar.error(`ERROR GETTING FIVE BOTS`);
         console.log('ERROR GETTING FIVE BOTS', error)
         res.sendStatus(400)
     }
@@ -47,12 +62,15 @@ app.post('/api/duel', (req, res) => {
         // comparing the total health to determine a winner
         if (compHealthAfterAttack > playerHealthAfterAttack) {
             playerRecord.losses++
+            rollback.info(`USER LOST`);
             res.status(200).send('You lost!')
         } else {
             playerRecord.losses++
+            rollback.info(`USER WON`);
             res.status(200).send('You won!')
         }
     } catch (error) {
+        rollback.error(`ERROR OCCURED DURING DUEL`);
         console.log('ERROR DUELING', error)
         res.sendStatus(400)
     }
@@ -60,8 +78,10 @@ app.post('/api/duel', (req, res) => {
 
 app.get('/api/player', (req, res) => {
     try {
+        rollback.info(`PLAYER STATS SUCCESSFULLY RETRIEVED`);
         res.status(200).send(playerRecord)
     } catch (error) {
+        rollback.critical(`ERROR GETTING PLAYER STATS`);
         console.log('ERROR GETTING PLAYER STATS', error)
         res.sendStatus(400)
     }
